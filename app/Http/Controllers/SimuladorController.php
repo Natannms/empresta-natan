@@ -12,19 +12,19 @@ class SimuladorController extends Controller
     public function simular(Request $request)
     {
         $this->carregarArquivoDadosSimulador()
-             ->simularEmprestimo($request->valor_emprestimo)
-             ->filtrarInstituicao($request->instituicoes)
-        ;
+            ->simularEmprestimo($request->valor_emprestimo)
+            ->filtrarInstituicao($request->instituicoes)
+            ->filtrarConvenio($request->convenios ? $request->convenios : []);
         return \response()->json($this->simulacao);
     }
 
-    private function carregarArquivoDadosSimulador() : self
+    private function carregarArquivoDadosSimulador(): self
     {
         $this->dadosSimulador = json_decode(\File::get(storage_path("app/public/simulador/taxas_instituicoes.json")));
         return $this;
     }
 
-    private function simularEmprestimo(float $valorEmprestimo) : self
+    private function simularEmprestimo(float $valorEmprestimo): self
     {
         foreach ($this->dadosSimulador as $dados) {
             $this->simulacao[$dados->instituicao][] = [
@@ -37,24 +37,41 @@ class SimuladorController extends Controller
         return $this;
     }
 
-    private function calcularValorDaParcela(float $valorEmprestimo, float $coeficiente) : float
+    private function calcularValorDaParcela(float $valorEmprestimo, float $coeficiente): float
     {
         return round($valorEmprestimo * $coeficiente, 2);
     }
 
-    private function filtrarInstituicao(array $instituicoes) : self
+    private function filtrarInstituicao(array $instituicoes): self
     {
-        if (\count($instituicoes))
-        {
+        if (\count($instituicoes)) {
             $arrayAux = [];
-            foreach ($instituicoes AS $key => $instituicao)
-            {
-                if (\array_key_exists($instituicao, $this->simulacao))
-                {
-                     $arrayAux[$instituicao] = $this->simulacao[$instituicao];
+            foreach ($instituicoes as $key => $instituicao) {
+                if (\array_key_exists($instituicao, $this->simulacao)) {
+                    $arrayAux[$instituicao] = $this->simulacao[$instituicao];
                 }
             }
             $this->simulacao = $arrayAux;
+        }
+        return $this;
+    }
+
+    private function filtrarConvenio(array $convenios = []): self
+    {
+        if (!empty($convenios)) {
+            foreach ($this->simulacao as $instituicao => $simulacoes) {
+                $simulacoesFiltradas = [];
+                foreach ($simulacoes as $simulacao) {
+                    if (in_array($simulacao['convenio'], $convenios)) {
+                        $simulacoesFiltradas[] = $simulacao;
+                    }
+                }
+                $this->simulacao[$instituicao] = $simulacoesFiltradas;
+            }
+
+            $this->simulacao = array_filter($this->simulacao, function ($simulacoes) {
+                return !empty($simulacoes);
+            });
         }
         return $this;
     }
