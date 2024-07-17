@@ -14,7 +14,9 @@ class SimuladorController extends Controller
         $this->carregarArquivoDadosSimulador()
             ->simularEmprestimo($request->valor_emprestimo)
             ->filtrarInstituicao($request->instituicoes)
-            ->filtrarConvenio($request->convenios ? $request->convenios : []);
+            ->filtrarConvenio($request->convenios ? $request->convenios : [])
+            ->filtrarParcelas($request->qtdParcelas ? $request->qtdParcelas : 0)
+        ;
         return \response()->json($this->simulacao);
     }
 
@@ -73,6 +75,27 @@ class SimuladorController extends Controller
                 return !empty($simulacoes);
             });
         }
+        return $this;
+    }
+
+    private function filtrarParcelas(int $quantidadeParcelas): self
+    {
+        if($quantidadeParcelas > 0) {
+            foreach ($this->simulacao as $instituicao => $simulacoes) {
+                $simulacoesFiltradas = [];
+                foreach ($simulacoes as $simulacao) {
+                    if ($simulacao['parcelas'] >= $quantidadeParcelas) {
+                        $simulacoesFiltradas[] = $simulacao;
+                    }
+                }
+                $this->simulacao[$instituicao] = $simulacoesFiltradas;
+            }
+
+            $this->simulacao = array_filter($this->simulacao, function ($simulacoes) {
+                return !empty($simulacoes);
+            });
+        }
+
         return $this;
     }
 }
