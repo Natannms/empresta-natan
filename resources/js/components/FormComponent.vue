@@ -46,7 +46,8 @@
             </div>
             <div class="mb-4">
                 <label for="parcelas" class="block text-gray-700">Parcelas</label>
-                <select id="parcelas" v-model="parcelasSelecionadas" class="mt-1 p-2 block w-full border rounded">
+                <select id="parcelas" v-model="parcelasSelecionadas" class="mt-1 p-2 block w-full border rounded"
+                    required>
                     <option v-for="parcela in parcelas" :key="parcela" :value="parcela">
                         {{ parcela }}
                     </option>
@@ -59,6 +60,8 @@
 
 <script>
 import axios from 'axios';
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
 
 export default {
     data() {
@@ -107,23 +110,44 @@ export default {
         removerConvenio(convenio) {
             this.conveniosSelecionados = this.conveniosSelecionados.filter(item => item !== convenio);
         },
-        submitForm() {
+        async submitForm() {
             const formData = {
                 valor_emprestimo: parseFloat(this.valorEmprestimo.replace(/[^0-9.-]+/g, '')),
                 instituicoes: this.instituicoesSelecionadas.map(instituicao => instituicao),
                 convenios: this.conveniosSelecionados.map(convenio => convenio),
-                parcelas: this.parcelasSelecionadas
+                qtdParcelas: this.parcelasSelecionadas
             };
 
-            if(this.instituicoesSelecionadas.length <= 0){
-
+            if (this.instituicoesSelecionadas.length <= 0) {
+                Toastify({
+                    text: "Adicione pelo menos uma instituição !",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#333",
+                    stopOnFocus: true
+                }).showToast();
+            }
+            if (this.conveniosSelecionados.length <= 0) {
+                Toastify({
+                    text: "Adicione pelo menos um convênio !",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#333",
+                    stopOnFocus: true
+                }).showToast();
             }
 
-            console.log('Dados do Formulário:', formData);
-
-            console.log('Instituições Selecionadas:', this.instituicoesSelecionadas);
-            console.log('Convênios Selecionados:', this.conveniosSelecionados);
-        }
+            if (this.conveniosSelecionados.length > 0 && this.instituicoesSelecionadas.length > 0) {
+                try {
+                    const response = await axios.post('/api/simular', formData);
+                    console.log(response.data);
+                } catch (error) {
+                    console.error('Erro ao enviar dados:', error);
+                }
+            }
+        },
     }
 };
 </script>
