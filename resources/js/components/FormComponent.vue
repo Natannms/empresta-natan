@@ -70,6 +70,10 @@ export default {
         setSimulacoes: {
             type: Function,
             required: true
+        },
+        setValorSolicitado: {
+            type: Function,
+            required: true
         }
     },
     data() {
@@ -126,6 +130,8 @@ export default {
                 qtdParcelas: this.parcelasSelecionadas
             };
 
+            this.setValorSolicitado(formData.valor_emprestimo)
+
             if (this.instituicoesSelecionadas.length <= 0) {
                 Toastify({
                     text: "Adicione pelo menos uma instituição!",
@@ -150,7 +156,7 @@ export default {
             if (this.conveniosSelecionados.length > 0 && this.instituicoesSelecionadas.length > 0) {
                 try {
                     const response = await axios.post('/api/simular', formData);
-                    this.setSimulacoes(response.data); // Chama o método passado por props
+                    this.setSimulacoes(response.data);
                 } catch (error) {
                     console.error('Erro ao enviar dados:', error);
                 }

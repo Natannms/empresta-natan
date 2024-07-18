@@ -1,8 +1,8 @@
 <template>
     <div class="w-full flex flex-col">
         <HeaderComponent></HeaderComponent>
-        <FormComponent :setSimulacoes="setSimulacoes"></FormComponent>
-        <Simulacoes v-if="Object.keys(simulacoes).length > 0" :simulacoes="simulacoes"></Simulacoes>
+        <FormComponent :setValorSolicitado="setValorSolicitado" :setSimulacoes="setSimulacoes" v-if="Object.keys(simulacoes).length <= 0"></FormComponent>
+        <Simulacoes :setSimulacoes="setSimulacoes" :valorSolicitado="valorSolicitado" v-if="Object.keys(simulacoes).length > 0" :simulacoes="simulacoes"></Simulacoes>
     </div>
 </template>
 
@@ -17,18 +17,29 @@ export default {
         FormComponent,
         Simulacoes
     },
+     props: {
+        setSimulacoes: {
+            type: Function,
+            required: true
+        },
+        setValorSolicitado:{
+            type: Function,
+            required: true
+        }
+    },
     data() {
         return {
-            simulacoes: {}
+            simulacoes: {},
+            valorSolicitado: 0
         };
     },
     methods: {
         setSimulacoes(data) {
             this.simulacoes = data;
+        },
+        setValorSolicitado(valor) {
+            this.valorSolicitado = valor;
         }
     }
 }
 </script>
-
-<style scoped>
-</style>
