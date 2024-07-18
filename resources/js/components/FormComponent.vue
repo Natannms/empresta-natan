@@ -1,14 +1,14 @@
 <template>
     <div class="container mx-auto p-4 bg-warning">
-        <h1 class="text-center text-2xl font-bold mb-4">Formulário de Empréstimo</h1>
+        <h1 class="text-center text-2xl font-bold mb-4 text-[#ffa600]">Simule agora</h1>
         <form @submit.prevent="submitForm">
             <div class="mb-4">
-                <label for="valorEmprestimo" class="block text-gray-700">Valor do Empréstimo</label>
+                <label for="valorEmprestimo" class="block text-[#ffa600]">Valor do Empréstimo</label>
                 <input type="text" id="valorEmprestimo" v-model="valorEmprestimo"
                     class="mt-1 p-2 block w-full border rounded" required />
             </div>
             <div class="mb-4">
-                <label for="instituicao" class="block text-gray-700">Instituição</label>
+                <label for="instituicao" class="block text-[#ffa600]">Instituição</label>
                 <div class="flex">
                     <select id="instituicao" v-model="instituicaoSelecionada"
                         class="mt-1 p-2 block w-full border rounded">
@@ -17,7 +17,7 @@
                         </option>
                     </select>
                     <button type="button" @click="adicionarInstituicao"
-                        class="bg-blue-500 text-white p-2 rounded ml-2">+</button>
+                        class="bg-[#ffa600] font-bold text-white p-2 rounded ml-2">+</button>
                 </div>
                 <div class="mt-2">
                     <span v-for="instituicao in instituicoesSelecionadas" :key="instituicao"
@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="mb-4">
-                <label for="convenio" class="block text-gray-700">Convênio</label>
+                <label for="convenio" class="block text-[#ffa600]">Convênio</label>
                 <div class="flex">
                     <select id="convenio" v-model="convenioSelecionado" class="mt-1 p-2 block w-full border rounded">
                         <option v-for="convenio in convenios" :key="convenio.chave" :value="convenio.chave">
@@ -35,7 +35,7 @@
                         </option>
                     </select>
                     <button type="button" @click="adicionarConvenio"
-                        class="bg-blue-500 text-white p-2 rounded ml-2">+</button>
+                        class="bg-[#ffa600] font-bold text-white p-2 rounded ml-2">+</button>
                 </div>
                 <div class="mt-2">
                     <span v-for="convenio in conveniosSelecionados" :key="convenio"
@@ -45,7 +45,7 @@
                 </div>
             </div>
             <div class="mb-4">
-                <label for="parcelas" class="block text-gray-700">Parcelas</label>
+                <label for="parcelas" class="block text-[#ffa600]">Quantidade mínima de Parcelas</label>
                 <select id="parcelas" v-model="parcelasSelecionadas" class="mt-1 p-2 block w-full border rounded"
                     required>
                     <option v-for="parcela in parcelas" :key="parcela" :value="parcela">
@@ -53,17 +53,29 @@
                     </option>
                 </select>
             </div>
-            <button type="submit" class="bg-blue-500 text-white p-2 rounded">Enviar</button>
+            <button type="submit" class=" bg-[#ffa600] text-white font-bold w-full p-2 rounded">Simular</button>
         </form>
     </div>
 </template>
 
 <script>
+import HeaderComponent from './HeaderComponent.vue';
+
 import axios from 'axios';
 import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
 
 export default {
+    props: {
+        setSimulacoes: {
+            type: Function,
+            required: true
+        },
+        setValorSolicitado: {
+            type: Function,
+            required: true
+        }
+    },
     data() {
         return {
             valorEmprestimo: '',
@@ -118,9 +130,11 @@ export default {
                 qtdParcelas: this.parcelasSelecionadas
             };
 
+            this.setValorSolicitado(formData.valor_emprestimo)
+
             if (this.instituicoesSelecionadas.length <= 0) {
                 Toastify({
-                    text: "Adicione pelo menos uma instituição !",
+                    text: "Adicione pelo menos uma instituição!",
                     duration: 3000,
                     gravity: "top",
                     position: "right",
@@ -130,7 +144,7 @@ export default {
             }
             if (this.conveniosSelecionados.length <= 0) {
                 Toastify({
-                    text: "Adicione pelo menos um convênio !",
+                    text: "Adicione pelo menos um convênio!",
                     duration: 3000,
                     gravity: "top",
                     position: "right",
@@ -142,26 +156,12 @@ export default {
             if (this.conveniosSelecionados.length > 0 && this.instituicoesSelecionadas.length > 0) {
                 try {
                     const response = await axios.post('/api/simular', formData);
-                    console.log(response.data);
+                    this.setSimulacoes(response.data);
                 } catch (error) {
                     console.error('Erro ao enviar dados:', error);
                 }
             }
-        },
+        }
     }
 };
 </script>
-
-<style scoped>
-.bg-warning {
-    background-color: yellow !important;
-}
-
-.text-center {
-    text-align: center;
-}
-
-.cursor-pointer {
-    cursor: pointer;
-}
-</style>
