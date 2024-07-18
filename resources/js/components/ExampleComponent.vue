@@ -1,25 +1,34 @@
 <template>
     <div class="w-full flex flex-col">
         <HeaderComponent></HeaderComponent>
-        <FormComponent></FormComponent>
+        <FormComponent :setSimulacoes="setSimulacoes"></FormComponent>
+        <Simulacoes v-if="Object.keys(simulacoes).length > 0" :simulacoes="simulacoes"></Simulacoes>
     </div>
 </template>
 
 <script>
 import FormComponent from './FormComponent.vue';
-import HeaderComponent from './HeaderComponent.vue'; // Importe o MeuComponente
+import HeaderComponent from './HeaderComponent.vue';
+import Simulacoes from './Simulacoes.vue';
 
 export default {
     components: {
-        HeaderComponent, // Registre o MeuComponente localmente no componente ExampleComponent
-        FormComponent
+        HeaderComponent,
+        FormComponent,
+        Simulacoes
     },
-    mounted() {
-        console.log('Component mounted.')
+    data() {
+        return {
+            simulacoes: {}
+        };
+    },
+    methods: {
+        setSimulacoes(data) {
+            this.simulacoes = data;
+        }
     }
 }
 </script>
 
 <style scoped>
-/* Estilos específicos do ExampleComponent aqui */
 </style>
