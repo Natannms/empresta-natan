@@ -1,23 +1,25 @@
 <template>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">Example Component</div>
-
-                    <div class="card-body">
-                        I'm an example component.
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="w-full flex flex-col">
+        <HeaderComponent></HeaderComponent>
+        <FormComponent></FormComponent>
     </div>
 </template>
 
 <script>
-    export default {
-        mounted() {
-            console.log('Component mounted.')
-        }
+import FormComponent from './FormComponent.vue';
+import HeaderComponent from './HeaderComponent.vue'; // Importe o MeuComponente
+
+export default {
+    components: {
+        HeaderComponent, // Registre o MeuComponente localmente no componente ExampleComponent
+        FormComponent
+    },
+    mounted() {
+        console.log('Component mounted.')
     }
+}
 </script>
+
+<style scoped>
+/* Estilos específicos do ExampleComponent aqui */
+</style>
