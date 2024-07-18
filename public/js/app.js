@@ -1935,7 +1935,80 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ({});
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      valorEmprestimo: '',
+      instituicoes: [],
+      convenios: [],
+      parcelas: [36, 48, 60, 72, 84],
+      instituicaoSelecionada: '',
+      convenioSelecionado: '',
+      instituicoesSelecionadas: [],
+      conveniosSelecionados: [],
+      parcelasSelecionadas: null
+    };
+  },
+  mounted: function mounted() {
+    this.fetchInstituicoes();
+    this.fetchConvenios();
+  },
+  methods: {
+    fetchInstituicoes: function fetchInstituicoes() {
+      var _this = this;
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('/api/instituicao').then(function (response) {
+        _this.instituicoes = response.data;
+      });
+    },
+    fetchConvenios: function fetchConvenios() {
+      var _this2 = this;
+      axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('/api/convenio').then(function (response) {
+        _this2.convenios = response.data;
+      });
+    },
+    adicionarInstituicao: function adicionarInstituicao() {
+      if (this.instituicaoSelecionada && !this.instituicoesSelecionadas.includes(this.instituicaoSelecionada)) {
+        this.instituicoesSelecionadas.push(this.instituicaoSelecionada);
+        this.instituicaoSelecionada = '';
+      }
+    },
+    adicionarConvenio: function adicionarConvenio() {
+      if (this.convenioSelecionado && !this.conveniosSelecionados.includes(this.convenioSelecionado)) {
+        this.conveniosSelecionados.push(this.convenioSelecionado);
+        this.convenioSelecionado = '';
+      }
+    },
+    removerInstituicao: function removerInstituicao(instituicao) {
+      this.instituicoesSelecionadas = this.instituicoesSelecionadas.filter(function (item) {
+        return item !== instituicao;
+      });
+    },
+    removerConvenio: function removerConvenio(convenio) {
+      this.conveniosSelecionados = this.conveniosSelecionados.filter(function (item) {
+        return item !== convenio;
+      });
+    },
+    submitForm: function submitForm() {
+      var formData = {
+        valor_emprestimo: parseFloat(this.valorEmprestimo.replace(/[^0-9.-]+/g, '')),
+        instituicoes: this.instituicoesSelecionadas.map(function (instituicao) {
+          return instituicao;
+        }),
+        convenios: this.conveniosSelecionados.map(function (convenio) {
+          return convenio;
+        }),
+        parcelas: this.parcelasSelecionadas
+      };
+      if (this.instituicoesSelecionadas.length <= 0) {}
+      console.log('Dados do Formulário:', formData);
+      console.log('Instituições Selecionadas:', this.instituicoesSelecionadas);
+      console.log('Convênios Selecionados:', this.conveniosSelecionados);
+    }
+  }
+});
 
 /***/ }),
 
@@ -2007,7 +2080,204 @@ __webpack_require__.r(__webpack_exports__);
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div");
+  return _c("div", {
+    staticClass: "container mx-auto p-4 bg-warning"
+  }, [_c("h1", {
+    staticClass: "text-center text-2xl font-bold mb-4"
+  }, [_vm._v("Formulário de Empréstimo")]), _vm._v(" "), _c("form", {
+    on: {
+      submit: function submit($event) {
+        $event.preventDefault();
+        return _vm.submitForm.apply(null, arguments);
+      }
+    }
+  }, [_c("div", {
+    staticClass: "mb-4"
+  }, [_c("label", {
+    staticClass: "block text-gray-700",
+    attrs: {
+      "for": "valorEmprestimo"
+    }
+  }, [_vm._v("Valor do Empréstimo")]), _vm._v(" "), _c("input", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.valorEmprestimo,
+      expression: "valorEmprestimo"
+    }],
+    staticClass: "mt-1 p-2 block w-full border rounded",
+    attrs: {
+      type: "text",
+      id: "valorEmprestimo",
+      required: ""
+    },
+    domProps: {
+      value: _vm.valorEmprestimo
+    },
+    on: {
+      input: function input($event) {
+        if ($event.target.composing) return;
+        _vm.valorEmprestimo = $event.target.value;
+      }
+    }
+  })]), _vm._v(" "), _c("div", {
+    staticClass: "mb-4"
+  }, [_c("label", {
+    staticClass: "block text-gray-700",
+    attrs: {
+      "for": "instituicao"
+    }
+  }, [_vm._v("Instituição")]), _vm._v(" "), _c("div", {
+    staticClass: "flex"
+  }, [_c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.instituicaoSelecionada,
+      expression: "instituicaoSelecionada"
+    }],
+    staticClass: "mt-1 p-2 block w-full border rounded",
+    attrs: {
+      id: "instituicao"
+    },
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.instituicaoSelecionada = $event.target.multiple ? $$selectedVal : $$selectedVal[0];
+      }
+    }
+  }, _vm._l(_vm.instituicoes, function (instituicao) {
+    return _c("option", {
+      key: instituicao.chave,
+      domProps: {
+        value: instituicao.chave
+      }
+    }, [_vm._v("\n                        " + _vm._s(instituicao.valor) + "\n                    ")]);
+  }), 0), _vm._v(" "), _c("button", {
+    staticClass: "bg-blue-500 text-white p-2 rounded ml-2",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: _vm.adicionarInstituicao
+    }
+  }, [_vm._v("+")])]), _vm._v(" "), _c("div", {
+    staticClass: "mt-2"
+  }, _vm._l(_vm.instituicoesSelecionadas, function (instituicao) {
+    return _c("span", {
+      key: instituicao,
+      staticClass: "bg-gray-200 p-1 rounded mr-2 cursor-pointer",
+      on: {
+        click: function click($event) {
+          return _vm.removerInstituicao(instituicao);
+        }
+      }
+    }, [_vm._v("\n                    " + _vm._s(instituicao) + "\n                ")]);
+  }), 0)]), _vm._v(" "), _c("div", {
+    staticClass: "mb-4"
+  }, [_c("label", {
+    staticClass: "block text-gray-700",
+    attrs: {
+      "for": "convenio"
+    }
+  }, [_vm._v("Convênio")]), _vm._v(" "), _c("div", {
+    staticClass: "flex"
+  }, [_c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.convenioSelecionado,
+      expression: "convenioSelecionado"
+    }],
+    staticClass: "mt-1 p-2 block w-full border rounded",
+    attrs: {
+      id: "convenio"
+    },
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.convenioSelecionado = $event.target.multiple ? $$selectedVal : $$selectedVal[0];
+      }
+    }
+  }, _vm._l(_vm.convenios, function (convenio) {
+    return _c("option", {
+      key: convenio.chave,
+      domProps: {
+        value: convenio.chave
+      }
+    }, [_vm._v("\n                        " + _vm._s(convenio.valor) + "\n                    ")]);
+  }), 0), _vm._v(" "), _c("button", {
+    staticClass: "bg-blue-500 text-white p-2 rounded ml-2",
+    attrs: {
+      type: "button"
+    },
+    on: {
+      click: _vm.adicionarConvenio
+    }
+  }, [_vm._v("+")])]), _vm._v(" "), _c("div", {
+    staticClass: "mt-2"
+  }, _vm._l(_vm.conveniosSelecionados, function (convenio) {
+    return _c("span", {
+      key: convenio,
+      staticClass: "bg-gray-200 p-1 rounded mr-2 cursor-pointer",
+      on: {
+        click: function click($event) {
+          return _vm.removerConvenio(convenio);
+        }
+      }
+    }, [_vm._v("\n                    " + _vm._s(convenio) + "\n                ")]);
+  }), 0)]), _vm._v(" "), _c("div", {
+    staticClass: "mb-4"
+  }, [_c("label", {
+    staticClass: "block text-gray-700",
+    attrs: {
+      "for": "parcelas"
+    }
+  }, [_vm._v("Parcelas")]), _vm._v(" "), _c("select", {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: _vm.parcelasSelecionadas,
+      expression: "parcelasSelecionadas"
+    }],
+    staticClass: "mt-1 p-2 block w-full border rounded",
+    attrs: {
+      id: "parcelas"
+    },
+    on: {
+      change: function change($event) {
+        var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+          return o.selected;
+        }).map(function (o) {
+          var val = "_value" in o ? o._value : o.value;
+          return val;
+        });
+        _vm.parcelasSelecionadas = $event.target.multiple ? $$selectedVal : $$selectedVal[0];
+      }
+    }
+  }, _vm._l(_vm.parcelas, function (parcela) {
+    return _c("option", {
+      key: parcela,
+      domProps: {
+        value: parcela
+      }
+    }, [_vm._v("\n                    " + _vm._s(parcela) + "\n                ")]);
+  }), 0)]), _vm._v(" "), _c("button", {
+    staticClass: "bg-blue-500 text-white p-2 rounded",
+    attrs: {
+      type: "submit"
+    }
+  }, [_vm._v("Enviar")])])]);
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -6449,7 +6719,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n/* Estilos específicos do ExampleComponent aqui */\n", ""]);
+exports.push([module.i, "\r\n/* Estilos específicos do ExampleComponent aqui */\r\n", ""]);
 
 // exports
 
@@ -6468,7 +6738,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.bg-warning[data-v-b1dd1884] {\n    background-color: yellow !important;\n}\n.text-center[data-v-b1dd1884] {\n    text-align: center;\n}\n", ""]);
+exports.push([module.i, "\n.bg-warning[data-v-b1dd1884] {\n    background-color: yellow !important;\n}\n.text-center[data-v-b1dd1884] {\n    text-align: center;\n}\n.cursor-pointer[data-v-b1dd1884] {\n    cursor: pointer;\n}\n", ""]);
 
 // exports
 
@@ -6487,7 +6757,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n/* Estilos do componente aqui */\n", ""]);
+exports.push([module.i, "\r\n/* Estilos do componente aqui */\r\n", ""]);
 
 // exports
 
